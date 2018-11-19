@@ -9,7 +9,8 @@ from keras.layers import Input, Dense, Flatten, Dropout
 from keras.layers.advanced_activations import LeakyReLU
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
-
+import data_parser
+from data_parser import get_formated_data
 
 #implementation of a simple MLP to try and predict vote with user content
 class MLP:
@@ -19,8 +20,8 @@ class MLP:
         # we calculate the shape : movie_genre + occupations + adress code + sex + age
         #self.input_shape = (self.movie_genres + self.number_of_movie_genre + 1 + 1 + 1)
         #temp values to test on mnist
-        self.input_shape = (28, 28)
-        self.num_classes = 10
+        self.input_shape = (43,)
+        self.num_classes = 5
         if not load_model:
             optimizer = Adam(0.0002, 0.5)
 
@@ -36,7 +37,7 @@ class MLP:
     def build_classifier(self):
         model = Sequential()
 
-        model.add(Flatten(input_shape=self.input_shape))
+        #model.add(Flatten(input_shape=self.input_shape))
         model.add(Dense(512, input_shape=self.input_shape))
         model.add((LeakyReLU(alpha=0.2)))
         model.add(Dropout(0.5))
@@ -55,7 +56,7 @@ class MLP:
 
         # load the dataset
         # dummy dataset
-        dataset = np.zeros((10,2))
+        dataset = get_formated_data()
         # seperate data into training, validation and test
         training_set = dataset[0:int(np.floor(dataset.shape[0] * 0.7))]
         x_train = training_set[:, 0]
@@ -71,9 +72,9 @@ class MLP:
 
         #=============================
         #test mnist data
-        (x_train, y_train), (x_valid, y_valid) = mnist.load_data()
-        x_test = x_valid
-        y_test = y_valid
+        #(x_train, y_train), (x_valid, y_valid) = mnist.load_data()
+        #x_test = x_valid
+        #y_test = y_valid
         #=============================
         #convert training data to one hot
         # convert class vectors to binary class matrices
