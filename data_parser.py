@@ -9,7 +9,8 @@ exported_data_file = "u.formated_data.csv"
 uData = pd.read_csv(filepath_or_buffer="u.data.csv", delimiter=r"\s?\|\s?")
 uItem = pd.read_csv(filepath_or_buffer="u.item.csv", delimiter=r"\s?\|\s?")
 uUser = pd.read_csv(filepath_or_buffer="u.user.csv", delimiter=r"\s?\|\s?")
-dataMatrix = sp.coo_matrix((uData["rating"],(uData["user.id"]-1,uData["item.id"]-1)))
+dataMatrix = sp.coo_matrix((uData["rating"], (uData["user.id"] - 1, uData["item.id"] - 1)))
+
 
 def movielens_to_MLP_data():
     #########################################
@@ -87,25 +88,30 @@ def movielens_to_MLP_data():
 
     return formated_data
 
-def is_already_exported() :
+
+def is_already_exported():
     file_path = "./" + exported_data_file
     return os.path.exists(file_path)
 
-def get_X(formated_data) :
-    return formated_data[:,:-1]
 
-def get_Y(formated_data) :
-    return formated_data[:,-1]
+def get_X(formated_data):
+    return formated_data[:, :-1]
 
+
+def get_Y(formated_data):
+    return formated_data[:, -1]
+
+def get_formated_data():
+    if is_already_exported():
+        return pd.read_csv(exported_data_file, delimiter=' ', header=None).values
+    else:
+        return movielens_to_MLP_data()
 
 ##############################################
 #                 MAIN
 ##############################################
 
-if is_already_exported() :
-    formated_data = pd.read_csv(exported_data_file, delimiter=' ', header=None).values
-else :
-    formated_data = movielens_to_MLP_data()
 
-print("X_data : " + str(get_X(formated_data)))
-print("Y_data : " + str(get_Y(formated_data)))
+
+#print("X_data : " + str(get_X(formated_data)))
+#print("Y_data : " + str(get_Y(formated_data)))

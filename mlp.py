@@ -5,25 +5,29 @@ import keras
 import matplotlib.pyplot as plt
 import numpy as np
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Flatten, Dropout
-from keras.layers.advanced_activations import LeakyReLU
+from keras.layers import Input, Dense, Flatten, Dropout, BatchNormalization
+from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 import data_parser
 from data_parser import get_formated_data
 
 #implementation of a simple MLP to try and predict vote with user content
+from log6308_projet.data_parser import get_X, get_Y
+
+
 class MLP:
     def __init__(self, load_model):
-        self.number_of_movie_genre = 0
-        self.number_of_occupations = 0
+        self.number_of_user_info = 23
+        self.number_of_item_info = 19
         # we calculate the shape : movie_genre + occupations + adress code + sex + age
         #self.input_shape = (self.movie_genres + self.number_of_movie_genre + 1 + 1 + 1)
         #temp values to test on mnist
-        self.input_shape = (43,)
+        self.input_shape = (self.number_of_user_info + self.number_of_item_info,)
         self.num_classes = 5
         if not load_model:
             optimizer = Adam(0.0002, 0.5)
+            #optimizer = Adam(0.1, 0.5)
 
             # Build and compile the discriminator
             self.classifier = self.build_classifier()
@@ -38,13 +42,32 @@ class MLP:
         model = Sequential()
 
         #model.add(Flatten(input_shape=self.input_shape))
-        model.add(Dense(512, input_shape=self.input_shape))
+
+        model.add(Dense(1024, input_shape=self.input_shape))
+        model.add(BatchNormalization())
         model.add((LeakyReLU(alpha=0.2)))
         model.add(Dropout(0.5))
+
+        model.add(Dense(512))
+        model.add(BatchNormalization())
+        model.add((LeakyReLU(alpha=0.2)))
+        model.add(Dropout(0.5))
+
         model.add(Dense(256))
+        model.add(BatchNormalization())
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.5))
+
+        model.add(Dense(128))
+        model.add(BatchNormalization())
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.5))
+
         model.add(Dense(self.num_classes, activation='softmax'))
+        #model.add(Dense(self.num_classes, activation='sigmoid'))
+       #model.add(BatchNormalization())
+       #model.add(keras.activations.sigmoid(1.0))
+
         model.summary()
 
         img = Input(shape=self.input_shape)
@@ -57,18 +80,20 @@ class MLP:
         # load the dataset
         # dummy dataset
         dataset = get_formated_data()
+        np.random.shuffle(dataset)
+        x = get_X(dataset)
+        y = get_Y(dataset)
+        y[:] -= 1 #we need to seperate into categories, we will have to add  1 to each votes made by the model afterward
+        #y[:] /= 4
         # seperate data into training, validation and test
-        training_set = dataset[0:int(np.floor(dataset.shape[0] * 0.7))]
-        x_train = training_set[:, 0]
-        y_train = training_set[:, 1]
+        x_train = x[0:int(np.floor(x.shape[0] * 0.7))]
+        y_train = y[0:int(np.floor(y.shape[0] * 0.7))]
 
-        validation_set = dataset[int(np.floor(dataset.shape[0] * 0.7)) + 1:int(np.floor(dataset.shape[0] * 0.85))]
-        x_valid = validation_set[:, 0]
-        y_valid = validation_set[:, 1]
+        x_valid = x[int(np.floor(x.shape[0] * 0.7)) + 1:int(np.floor(x.shape[0] * 0.85))]
+        y_valid = y[int(np.floor(y.shape[0] * 0.7)) + 1:int(np.floor(y.shape[0] * 0.85))]
 
-        test_set = dataset[int(np.floor(dataset.shape[0] * 0.85)) + 1:int(np.floor(dataset.shape[0]) - 1)]
-        x_test = test_set[:, 0]
-        y_test = test_set[:, 1]
+        x_test = x[int(np.floor(x.shape[0] * 0.85)) + 1:int(np.floor(x.shape[0]) - 1)]
+        y_test = y[int(np.floor(y.shape[0] * 0.85)) + 1:int(np.floor(y.shape[0]) - 1)]
 
         #=============================
         #test mnist data
@@ -79,7 +104,7 @@ class MLP:
         #convert training data to one hot
         # convert class vectors to binary class matrices
         y_train = keras.utils.to_categorical(y_train, self.num_classes)
-        y_valid = keras.utils.to_categorical(y_test, self.num_classes)
+        y_valid = keras.utils.to_categorical(y_valid, self.num_classes)
         y_test = keras.utils.to_categorical(y_test, self.num_classes)
 
         # callbacks
