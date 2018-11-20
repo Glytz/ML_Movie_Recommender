@@ -1,0 +1,45 @@
+        model.add(Dense(1024, input_shape=self.input_shape))
+        model.add(BatchNormalization())
+        model.add((LeakyReLU(alpha=0.2)))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(512))
+        model.add(BatchNormalization())
+        model.add((LeakyReLU(alpha=0.2)))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(256))
+        model.add(BatchNormalization())
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(128))
+        model.add(BatchNormalization())
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(self.num_classes, activation='softmax'))
+
+  128/14998 [..............................] - ETA: 21s
+ 1152/14998 [=>............................] - ETA: 2s 
+ 2048/14998 [===>..........................] - ETA: 1s
+ 2944/14998 [====>.........................] - ETA: 1s
+ 3712/14998 [======>.......................] - ETA: 1s
+ 4736/14998 [========>.....................] - ETA: 0s
+ 5504/14998 [==========>...................] - ETA: 0s
+ 6272/14998 [===========>..................] - ETA: 0s
+ 7168/14998 [=============>................] - ETA: 0s
+ 7936/14998 [==============>...............] - ETA: 0s
+ 8960/14998 [================>.............] - ETA: 0s
+ 9856/14998 [==================>...........] - ETA: 0s
+10880/14998 [====================>.........] - ETA: 0s
+11648/14998 [======================>.......] - ETA: 0s
+12544/14998 [========================>.....] - ETA: 0s
+13312/14998 [=========================>....] - ETA: 0s
+14208/14998 [===========================>..] - ETA: 0s
+14998/14998 [==============================] - 1s 73us/step
+Test Accuracy : 0.3913855180690759
+Test loss : 1.3552467066505016
+Sucess!
+
+output {0,1,2,3,4} . Pour reavoir la vote, il faut faire +1

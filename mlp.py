@@ -4,6 +4,7 @@ import os
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
+import utils
 from keras.datasets import mnist
 from keras.layers import Input, Dense, Flatten, Dropout, BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU, Softmax
@@ -13,18 +14,29 @@ import data_parser
 from data_parser import get_formated_data
 
 #implementation of a simple MLP to try and predict vote with user content
-from log6308_projet.data_parser import get_X, get_Y
+from data_parser import get_X, get_Y, get_formated_data2
 
 
 class MLP:
-    def __init__(self, load_model):
-        self.number_of_user_info = 23
-        self.number_of_item_info = 19
-        # we calculate the shape : movie_genre + occupations + adress code + sex + age
-        #self.input_shape = (self.movie_genres + self.number_of_movie_genre + 1 + 1 + 1)
-        #temp values to test on mnist
-        self.input_shape = (self.number_of_user_info + self.number_of_item_info,)
-        self.num_classes = 5
+    def __init__(self, use_data_v1, load_model, model_path):
+        self.use_data_v1 = use_data_v1
+        if use_data_v1:
+            self.number_of_user_info = 23
+            self.number_of_item_info = 19
+            # we calculate the shape : movie_genre + occupations + adress code + sex + age
+            #self.input_shape = (self.movie_genres + self.number_of_movie_genre + 1 + 1 + 1)
+            #temp values to test on mnist
+            self.input_shape = (self.number_of_user_info + self.number_of_item_info,)
+            self.num_classes = 5
+        else: # we use the second dataset which will have different input size, and different content
+            self.number_of_user_info = 23
+            self.number_of_item_info = 19
+            self.number_of_movie = 1663
+            # we calculate the shape : movie_genre + occupations + adress code + sex + age
+            #self.input_shape = (self.movie_genres + self.number_of_movie_genre + 1 + 1 + 1)
+            #temp values to test on mnist
+            self.input_shape = (self.number_of_user_info + self.number_of_item_info + self.number_of_movie,)
+            self.num_classes = 5
         if not load_model:
             optimizer = Adam(0.0002, 0.5)
             #optimizer = Adam(0.1, 0.5)
@@ -36,7 +48,7 @@ class MLP:
                                     metrics=['acc'])
         else:
             working_directory_path = os.getcwd()
-            self.classifier = keras.models.load_model(working_directory_path + "/models/classifier.h5")
+            self.classifier = keras.models.load_model(working_directory_path + model_path)
 
     def build_classifier(self):
         model = Sequential()
@@ -75,11 +87,14 @@ class MLP:
 
         return Model(img, validity)
 
-    def train(self, epochs=1, batch_size=128):
+    def train(self,epochs=1, batch_size=128):
 
         # load the dataset
         # dummy dataset
-        dataset = get_formated_data()
+        if self.use_data_v1:
+            dataset = get_formated_data()
+        else:
+            dataset = get_formated_data2()
         np.random.shuffle(dataset)
         x = get_X(dataset)
         y = get_Y(dataset)
@@ -139,6 +154,55 @@ class MLP:
         plt.title("Loss over epochs")
         plt.legend()
         plt.show()
+
+    def softmax_pred_to_list(self, softmax_predictions):
+        predict_class = np.argmax(softmax_predictions, axis=1)
+        #preds are between 0 and 4, we shift to be between 1 and 5
+        predict_class[:] += 1
+        return predict_class.tolist()
+
+
+    def test_model(self, is_soft_max):
+        # load the dataset
+        # dummy dataset
+        dataset = []
+        if self.use_data_v1:
+            dataset = get_formated_data()
+        else:
+            dataset = get_formated_data2()
+        np.random.shuffle(dataset)
+        x = get_X(dataset)
+        y = get_Y(dataset)
+        y[:] -= 1 #we need to seperate into categories, we will have to add  1 to each votes made by the model afterward
+        if not is_soft_max:
+            y[:] /= 4
+        # seperate data into training, validation and test
+        x_train = x[0:int(np.floor(x.shape[0] * 0.7))]
+        y_train = y[0:int(np.floor(y.shape[0] * 0.7))]
+
+        x_valid = x[int(np.floor(x.shape[0] * 0.7)) + 1:int(np.floor(x.shape[0] * 0.85))]
+        y_valid = y[int(np.floor(y.shape[0] * 0.7)) + 1:int(np.floor(y.shape[0] * 0.85))]
+
+        x_test = x[int(np.floor(x.shape[0] * 0.85)) + 1:int(np.floor(x.shape[0]) - 1)]
+        y_test = y[int(np.floor(y.shape[0] * 0.85)) + 1:int(np.floor(y.shape[0]) - 1)]
+
+        predictions = self.classifier.predict(x_test, batch_size=128, verbose=1)
+        if is_soft_max:
+            predictions = self.softmax_pred_to_list(predictions)
+        else:
+            predictions[:] *=4
+            predictions[:] += 1
+        #we run the error of the predictions, we will compare it vs mean as a baseline
+
+        #mlp preds errors
+        mlp_quad_error = utils.calculate_quadratic_error(predictions, y_test)
+        mlp_abs_error = utils.calculate_abs_error(predictions, y_test)
+        return mlp_abs_error, mlp_quad_error
+
+    def generate_graph_model(self):
+        from keras.utils import plot_model
+        plot_model(self.classifier, to_file="model.svg", show_layer_names=True, show_shapes=True, expand_nested = True)
+
 
 
 class SaveModel(keras.callbacks.Callback):

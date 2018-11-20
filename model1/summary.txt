@@ -1,0 +1,36 @@
+        model.add(Dense(1024, input_shape=self.input_shape))
+        model.add(BatchNormalization())
+        model.add((LeakyReLU(alpha=0.2)))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(512))
+        model.add(BatchNormalization())
+        model.add((LeakyReLU(alpha=0.2)))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(256))
+        model.add(BatchNormalization())
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.5))
+
+        model.add(Dense(128))
+        model.add(BatchNormalization())
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.5))
+
+        #model.add(Dense(self.num_classes, activation='softmax'))
+        model.add(Dense(self.num_classes, activation='sigmoid'))
+
+  128/14998 [..............................] - ETA: 22s
+ 3072/14998 [=====>........................] - ETA: 0s 
+ 5632/14998 [==========>...................] - ETA: 0s
+ 8192/14998 [===============>..............] - ETA: 0s
+10624/14998 [====================>.........] - ETA: 0s
+13312/14998 [=========================>....] - ETA: 0s
+14998/14998 [==============================] - 0s 32us/step
+Test Accuracy : 0.22629683958655883
+Test loss : 0.07080987667318885
+Sucess!
+
+input entre 0 et 1. Pour reavoir la vote, il faut faire *4 +1
+losss : squared mean error

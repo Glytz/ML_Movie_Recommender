@@ -212,7 +212,7 @@ def get_formated_data2():
 #                 MAIN
 ##############################################
 
-d1 = get_formated_data()
-d2 = get_formated_data2()
+#d1 = get_formated_data()
+#d2 = get_formated_data2()
 #print("X_data : " + str(get_X(d1)))
 #print("Y_data : " + str(get_Y(d1)))
