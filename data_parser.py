@@ -70,6 +70,7 @@ def movielens_to_MLP_pure_content():
 
     #########################################
     #     USER + ITEM + VOTE : 23 + 19 + 1 = 43 (size)
+    '''
     formated_data = None
     for i, j, vote in zip(dataMatrix.row, dataMatrix.col, dataMatrix.data):
         user_info = user_description_matrix[i]
@@ -81,7 +82,20 @@ def movielens_to_MLP_pure_content():
             formated_data = user_item_vote_info
         else:
             formated_data = np.concatenate((formated_data, user_item_vote_info), axis=0)
-
+    '''
+    row_size = len(uData)
+    col_size = user_description_matrix.shape[1] + items_categorie_matrix.shape[1] + 1
+    size = (row_size, col_size)
+    formated_data = np.zeros(size)
+    k = 0
+    for i, j, vote in zip(dataMatrix.row, dataMatrix.col, dataMatrix.data):
+        user_info = user_description_matrix[i]
+        item_info = items_categorie_matrix[j]
+        user_item_info = np.append(user_info, item_info)
+        user_item_vote_info = np.append(user_item_info, vote)
+        user_item_vote_info = np.reshape(user_item_vote_info, (1, len(user_item_vote_info)))
+        formated_data[k] = user_item_vote_info
+        k = k + 1
     ########################################
     # Export data to csv
     n = formated_data.shape[1] - 1
@@ -148,23 +162,25 @@ def movielens_to_MLP_user_content():
     user_description_matrix = np.concatenate((user_description_matrix, job_matrix), axis=1)
 
     #########################################
-    #     USER + ITEM + VOTE : 23 + 19 + 1 = 43 (size)
-    formated_data = None
+    #     USER + ITEM + VOTE : 23 + len(uItem) + 1 = 43 (size)
+    row_size = len(uData)
+    col_size = user_description_matrix.shape[1] + len(uItem) + 1
+    size = (row_size, col_size)
+    formated_data = np.zeros(size)
+    k = 0
     for i, j, vote in zip(dataMatrix.row, dataMatrix.col, dataMatrix.data):
         user_info = user_description_matrix[i]
         item_info = movie_one_hot_matrix[j]
         user_item_info = np.append(user_info, item_info)
         user_item_vote_info = np.append(user_item_info, vote)
         user_item_vote_info = np.reshape(user_item_vote_info, (1, len(user_item_vote_info)))
-        if formated_data is None:
-            formated_data = user_item_vote_info
-        else:
-            formated_data = np.concatenate((formated_data, user_item_vote_info), axis=0)
+        formated_data[k] = user_item_vote_info
+        k = k + 1
 
     ########################################
     # Export data to csv
     n = formated_data.shape[1] - 1
-    np.savetxt(exported_data_file, formated_data, fmt=' '.join(['%1.4f'] + ['%i'] * n))
+    np.savetxt(exported_data_file2, formated_data, fmt=' '.join(['%1.4f'] + ['%i'] * n))
 
     return formated_data
 
@@ -198,5 +214,5 @@ def get_formated_data2():
 
 d1 = get_formated_data()
 d2 = get_formated_data2()
-#print("X_data : " + str(get_X(formated_data)))
-#print("Y_data : " + str(get_Y(formated_data)))
+#print("X_data : " + str(get_X(d1)))
+#print("Y_data : " + str(get_Y(d1)))
