@@ -1,7 +1,5 @@
 import numpy as np
-import pandas as pd
-import scipy.sparse as sp
-import matplotlib.pyplot as plt
+
 
 def calculate_quadratic_error(predicted_votes, real_votes):
     # calculate mask to only calculate the quadratic error where we have common vote, to not include NA (0) values
