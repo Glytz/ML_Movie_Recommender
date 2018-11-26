@@ -36,10 +36,10 @@ def baseline_cross_validation(original_graph, number_of_iteration):
         for j in range(len(index_to_remove)):
             leave_one_out_graph[j, index_to_remove[j]] = 0
 
-        baseline_prediction = np.where(True,
-                                       leave_one_out_graph.mean(axis=0),
+        leave_one_out_graph[leave_one_out_graph == 0] = np.nan
+        leave_one_out_predictions = np.where(np.isnan(leave_one_out_graph),
+                 np.ma.array(leave_one_out_graph, mask=np.isnan(leave_one_out_graph)).mean(axis=0),
                                        leave_one_out_graph)
-        leave_one_out_predictions = baseline_prediction
         predicted_values = np.zeros(original_graph.shape[0])
         real_values = np.zeros(original_graph.shape[0])
 
