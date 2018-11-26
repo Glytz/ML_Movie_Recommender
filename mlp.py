@@ -87,7 +87,7 @@ class MLP:
 
         return Model(img, validity)
 
-    def train(self,epochs=1, batch_size=128):
+    def train(self,epochs=1, batch_size=128, is_softmax=True):
 
         # load the dataset
         # dummy dataset
@@ -98,8 +98,9 @@ class MLP:
         np.random.shuffle(dataset)
         x = get_X(dataset)
         y = get_Y(dataset)
-        y[:] -= 1 #we need to seperate into categories, we will have to add  1 to each votes made by the model afterward
-        #y[:] /= 4
+        y[:] -= 1
+        if not is_softmax:
+            y[:] /= 4
         # seperate data into training, validation and test
         x_train = x[0:int(np.floor(x.shape[0] * 0.7))]
         y_train = y[0:int(np.floor(y.shape[0] * 0.7))]
@@ -110,17 +111,11 @@ class MLP:
         x_test = x[int(np.floor(x.shape[0] * 0.85)) + 1:int(np.floor(x.shape[0]) - 1)]
         y_test = y[int(np.floor(y.shape[0] * 0.85)) + 1:int(np.floor(y.shape[0]) - 1)]
 
-        #=============================
-        #test mnist data
-        #(x_train, y_train), (x_valid, y_valid) = mnist.load_data()
-        #x_test = x_valid
-        #y_test = y_valid
-        #=============================
-        #convert training data to one hot
-        # convert class vectors to binary class matrices
-        y_train = keras.utils.to_categorical(y_train, self.num_classes)
-        y_valid = keras.utils.to_categorical(y_valid, self.num_classes)
-        y_test = keras.utils.to_categorical(y_test, self.num_classes)
+        if is_softmax:
+            # convert class vectors to binary class matrices
+            y_train = keras.utils.to_categorical(y_train, self.num_classes)
+            y_valid = keras.utils.to_categorical(y_valid, self.num_classes)
+            y_test = keras.utils.to_categorical(y_test, self.num_classes)
 
         # callbacks
         save_model = SaveModel(self.classifier)
@@ -173,10 +168,6 @@ class MLP:
         np.random.shuffle(dataset)
         x = get_X(dataset)
         y = get_Y(dataset)
-        y[:] -= 1 #we need to seperate into categories, we will have to add  1 to each votes made by the model afterward
-        if not is_soft_max:
-            y[:] /= 4
-        # seperate data into training, validation and test
         x_train = x[0:int(np.floor(x.shape[0] * 0.7))]
         y_train = y[0:int(np.floor(y.shape[0] * 0.7))]
 
