@@ -4,6 +4,7 @@ import mlp
 import numpy as np
 import utils
 import baseline
+import baysien
 
 if __name__ == '__main__':
     # default mninst parameters
@@ -25,7 +26,13 @@ if __name__ == '__main__':
     # we run the error of the predictions, we will compare it vs mean as a baseline
     print("Mlp Quadratic Error on test set : " + str(mlp_quad_error))
     print("Mlp Abs Error on test set : " + str(mlp_abs_error))
+
     # baseline errors preds
     baseline_abs_error, baseline_quadratic_error = baseline.baseline_error()
     print("Baseline absolute error : " + str(baseline_abs_error))
     print("Baseline quadratic error : " + str(baseline_quadratic_error))
+
+    #we run a baysien model preds
+    baysien_abs_error, baysien_quadratic_error = baysien.cross_validation()
+    print("Baysien absolute error : " + str(baysien_abs_error))
+    print("Baysien quadratic error : " + str(baysien_quadratic_error))
