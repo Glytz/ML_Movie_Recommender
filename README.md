@@ -37,20 +37,20 @@ Vous pouvez utiliser plusieurs paramètres avec celui-ci soit :
 
 #commande pour rouler le code sur ubuntu
 #pour rouler le model1 :
-python3 main.py --load_model 1 --train_model 0 --use_data_v1 1 --model_path "/model1/classifier.h5" --is_softmax 0 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 1 --train_model 0 --use_data_v1 1 --model_path "/model1/classifier.h5" --is_softmax 0 --seed 1693214 --epochs 500 --batch_size 128
 #pour rouler le model2 :
-python3 main.py --load_model 1 --train_model 0 --use_data_v1 1 --model_path "/model2/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 1 --train_model 0 --use_data_v1 1 --model_path "/model2/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
 #Pour rouler le model3 :
-python3 main.py --load_model 1 --train_model 0 --use_data_v1 0 --model_path "/model3/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 1 --train_model 0 --use_data_v1 0 --model_path "/model3/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
 
 #Pour entrainer le model avec le data1 :
-python3 main.py --load_model 0 --train_model 1 --use_data_v1 1 --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 0 --train_model 1 --use_data_v1 1 --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
 
 #Pour entrainer le model avec le data2 :
-python3 main.py --load_model 0 --train_model 1 --use_data_v1 0 --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 0 --train_model 1 --use_data_v1 0 --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
 
 #Pour continue l'entrainement sur le model 2 : 
-python3 main.py --load_model 1 --train_model 1 --use_data_v1 1 --model_path "/model2/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
+python3 -W ignore main.py --load_model 1 --train_model 1 --use_data_v1 1 --model_path "/model2/classifier.h5" --is_softmax 1 --seed 1693214 --epochs 500 --batch_size 128
 
 
 

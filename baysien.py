@@ -116,7 +116,6 @@ def cross_validation():
         age = uUser["age"][user_to_delete - 1]
         rating = similarities(train, occupation, sex, age, df)
         y = 0
-        print(i)
         for row in test.itertuples():
             y += 1
             item_id = row[2]
